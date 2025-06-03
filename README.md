@@ -40,7 +40,6 @@ Ce script doit être lancé **avant `pre-process.py`**. Il permet de réduire le
 - Conservant uniquement les régions où la parole est présente
 - Exportant les timestamps des segments de parole détectés au format **RTTM**
 
----
 ### 🚀 Utilisation
 
 ```bash
