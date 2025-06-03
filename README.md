@@ -29,3 +29,22 @@ Ce script lance **l'entraînement auto-supervisé** d’un modèle `Wav2Vec2ForP
 🎯 Ce script permet de développer un modèle Wav2Vec2 adapté à un domaine ou à une langue spécifique, même en l’absence de données annotées.
 
 ---
+## `vad_pyannote.py` – Voice Activity Detection (VAD) avec PyAnnote
+
+Ce script applique la **détection d’activité vocale (VAD)** en utilisant le modèle pré-entraîné [pyannote-audio](https://github.com/pyannote/pyannote-audio) pour filtrer les zones non parlées dans les fichiers audio. Il génère des fichiers `.wav` contenant uniquement les segments de parole ainsi que des fichiers `.rttm` avec les timestamps des segments détectés. 
+
+### 📌 But
+
+Ce script doit être lancé **avant `pre-process.py`**. Il permet de réduire le bruit et l’audio non pertinent en :
+- Supprimant les parties silencieuses ou non parlées
+- Conservant uniquement les régions où la parole est présente
+- Exportant les timestamps des segments de parole détectés au format **RTTM**
+
+---
+### 🚀 Utilisation
+
+```bash
+python vad_pyannote.py \
+  --input_dir /chemin/vers/audio_brut \
+  --output_dir /chemin/vers/sortie_vad
+
