@@ -2,43 +2,53 @@
 Cette branche contient plusieurs expériences liées à la **reconnaissance automatique de la parole (ASR)**.
 
 ---
+# 🔄 Pipeline de Prétraitement et d'Entraînement Auto-Supervisé avec Wav2Vec2
 
-### `pre-process.py`
+## `vad_pyannote.py` — Détection d'Activité Vocale (VAD) avec PyAnnote
 
-Ce script prépare les données audio pour l'entraînement auto-supervisé :
+Ce script applique la **détection d’activité vocale (VAD)** en utilisant le modèle pré-entraîné [pyannote-audio](https://github.com/pyannote/pyannote-audio).
 
-- 🔍 Parcourt un répertoire de fichiers `.wav` récursivement.
-- 🚫 Ignore automatiquement les fichiers contenant certains noms (par défaut : `Emilie_K`, `Fabiano`).
-- 🔄 Rééchantillonne les fichiers à 16 kHz s’ils ne le sont pas déjà.
-- ✂️ Découpe les fichiers audio longs en segments de 10 à 20 secondes, avec un **recouvrement de 2 secondes** entre les morceaux pour éviter la perte d'information.
-- 💾 Sauvegarde les fichiers traités dans un répertoire de sortie spécifié.
+### 🎯 Objectif
 
-✅ Ce traitement est essentiel pour garantir que les données audio respectent les contraintes de format et de durée attendues par le modèle Wav2Vec2.
+Ce traitement est lancé **avant `pre-process.py`** pour filtrer les zones non parlées dans les fichiers `.wav`. Il permet de :
 
----
-### `train_wav2vec.py`
-
-Ce script lance **l'entraînement auto-supervisé** d’un modèle `Wav2Vec2ForPreTraining` à l’aide de la bibliothèque 🤗 **Transformers** :
-
-- ⚙️ Définit une **configuration personnalisée** du modèle (taille des couches, nombre de têtes d’attention, masquage temporel, etc.).
-- 📦 Charge un **jeu de données audio prétraité** au format HuggingFace (`load_from_disk`).
-- 🛠️ Configure les **paramètres d'entraînement** (batch size, accumulation de gradient, logs TensorBoard, précision mixte, etc.).
-- 🚀 Utilise la classe `Trainer` pour gérer l’entraînement.
-- 🧠 Entraîne le modèle **sans transcriptions**, uniquement à partir du signal audio (apprentissage auto-supervisé).
-
-🎯 Ce script permet de développer un modèle Wav2Vec2 adapté à un domaine ou à une langue spécifique, même en l’absence de données annotées.
+- 🔇 Supprimer les parties silencieuses
+- 🗣️ Conserver uniquement les segments contenant de la parole
+- 🕒 Générer des fichiers `.rttm` avec les timestamps détectés
+- 💾 Sauvegarder des `.wav` nettoyés pour l'étape suivante
 
 ---
-## `vad_pyannote.py` – Voice Activity Detection (VAD) avec PyAnnote
 
-Ce script applique la **détection d’activité vocale (VAD)** en utilisant le modèle pré-entraîné [pyannote-audio](https://github.com/pyannote/pyannote-audio) pour filtrer les zones non parlées dans les fichiers audio. Il génère des fichiers `.wav` contenant uniquement les segments de parole ainsi que des fichiers `.rttm` avec les timestamps des segments détectés. 
+## `pre-process.py` — Préparation des Données Audio
 
-### 📌 But
+Ce script prépare les fichiers audio pour l'entraînement auto-supervisé Wav2Vec2.
 
-Ce script doit être lancé **avant `pre-process.py`**. Il permet de réduire le bruit et l’audio non pertinent en :
-- Supprimant les parties silencieuses ou non parlées
-- Conservant uniquement les régions où la parole est présente
-- Exportant les timestamps des segments de parole détectés au format **RTTM**
+### ⚙️ Étapes du pipeline
+
+- 🔍 Parcourt récursivement un répertoire contenant des fichiers `.wav`
+- 🚫 Ignore les fichiers contenant certains noms (`Emilie_K`, `Fabiano`, etc.)
+- 🔄 Rééchantillonne tous les fichiers à **16 kHz mono**
+- ✂️ Découpe les longs fichiers en segments de **10 à 20 secondes**, avec **2 secondes de recouvrement**
+- 💾 Sauvegarde les segments dans un répertoire de sortie structuré
+
+✅ Ce traitement garantit la conformité du corpus audio avec les exigences de format du modèle Wav2Vec2.
+
+---
+
+## `train_wav2vec.py` — Entraînement Auto-Supervisé avec Transformers
+
+Ce script lance l'entraînement auto-supervisé du modèle `Wav2Vec2ForPreTraining` via 🤗 HuggingFace.
+
+### ⚙️ Fonctions principales
+
+- 📐 Définit une **configuration sur mesure** du modèle (couches, têtes, masquage, etc.)
+- 📂 Charge un corpus audio prétraité (`load_from_disk`)
+- 🛠️ Configure les **paramètres d'entraînement** (batch size, logs, fp16, etc.)
+- 🚀 Lance l’entraînement avec la classe `Trainer`
+- 🧠 Apprend directement à partir du **signal audio brut**, sans besoin de transcriptions
+
+🎯 Ce pipeline permet d’adapter un modèle Wav2Vec2 à une langue ou un domaine spécifique en l’absence de données annotées.
+
 - 
 
 # Pipeline de Fine-Tuning de Whisper pour le Kriol
@@ -63,6 +73,67 @@ Ce dépôt contient un pipeline complet pour fine-tuner le modèle ASR Whisper d
 Installation :
 ```bash
 pip install transformers datasets torchaudio evaluate accelerate
+
+```
+
+## 🔄 Aperçu du pipeline
+
+### 1. Préparer le CSV
+
+Créer un fichier CSV (`whisper_kriol_cm.csv`) avec les colonnes suivantes :
+
+- `audio` — nom du fichier audio complet (ex : `Emilie_K.wav`)
+- `start` / `end` — timestamps des segments (en secondes)
+- `text` — transcription
+- `variety` — étiquette de dialecte (ex : `CM`, `GB`)
+
+### 2. Normaliser et vérifier
+
+Exécuter les scripts suivants pour nettoyer les transcriptions :
+
+```bash
+python simple_normalization.py
+
+```
+
+### 3. Charger en dataset Hugging Face
+
+Charger le fichier CSV dans un objet `datasets.DatasetDict` et le diviser en jeux d'entraînement et de test :
+
+```python
+from hf_dataset_loader import dataset  # prépare et divise en train/test
+
+```
+
+### 4. Tokeniser pour Whisper
+
+Appliquer le `WhisperProcessor` pour générer les champs `input_features` et `labels` :
+
+```python
+from whisper_tokenizer import dataset  # ajoute input_features et labels
+```
+### 5. Entraîner
+
+Soumettre l'entraînement sur SLURM :
+
+```bash
+sbatch whisper_train.slurm
+```
+
+Le modèle fine-tuné sera sauvegardé dans :
+
+whisper-kriol-finetuned/
+
+### 6. Inférence
+
+Lancer une transcription sur un fichier `.wav` :
+
+```bash
+python whisper_infer.py
+```
+
+Les résultats sont sauvegardés dans un fichier JSON
+
 
 
 
