@@ -51,7 +51,7 @@ Ce dépôt contient un pipeline complet pour fine-tuner le modèle ASR Whisper d
 - `whisper_infer.py` — inférence à partir du modèle entraîné
 - `whisper_train.slurm` — script SLURM pour entraînement sur cluster avec LETO
 - `whisper_kriol_cm.csv` — corpus segmenté avec transcriptions et étiquettes de variétés
-- `simple_normalization.py`, `transcription_checker.py` — outils de nettoyage et vérification orthographique
+- `simple_normalization.py`— outils de nettoyage et vérification orthographique
 
 ## 🧠 Prérequis
 
