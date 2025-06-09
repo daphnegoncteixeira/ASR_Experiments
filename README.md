@@ -131,10 +131,11 @@ Lancer une transcription sur un fichier `.wav` :
 ```bash
 python whisper_infer.py
 ```
+Les résultats sont sauvegardés dans un fichier JSON
 
 # Pipeline de Fine-Tuning avec Gervasio
+à rediger
 
-Les résultats sont sauvegardés dans un fichier JSON
 
 
 
