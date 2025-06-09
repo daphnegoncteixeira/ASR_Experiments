@@ -47,3 +47,29 @@ python vad_pyannote.py \
   --input_dir /chemin/vers/audio_brut \
   --output_dir /chemin/vers/sortie_vad
 
+
+# Pipeline de Fine-Tuning de Whisper pour le Kriol
+
+Ce dépôt contient un pipeline complet pour fine-tuner le modèle ASR Whisper d'OpenAI sur le Kriol, une langue créole à base portugaise parlée en Guinée-Bissau et en Casamance. Le pipeline est conçu pour des scénarios à faibles ressources, avec peu de données transcrites, et optimisé pour la reproductibilité, l'analyse linguistique et le déploiement sur le terrain.
+
+## 📁 Structure du dépôt
+
+- `whisper_trainer.py` — fine-tuning de Whisper avec Hugging Face Trainer
+- `whisper_infer.py` — inférence à partir du modèle entraîné
+- `whisper_train.slurm` — script SLURM pour entraînement sur cluster avec LETO
+- `whisper_kriol_cm.csv` — corpus segmenté avec transcriptions et étiquettes de variétés
+- `simple_normalization.py`, `transcription_checker.py` — outils de nettoyage et vérification orthographique
+
+## 🧠 Prérequis
+
+- Python 3.8+
+- PyTorch avec support GPU
+- `transformers`, `datasets`, `torchaudio`, `evaluate`, `accelerate`
+- Environnement Conda (ex: `training`)
+
+Installation :
+```bash
+pip install transformers datasets torchaudio evaluate accelerate
+
+
+
