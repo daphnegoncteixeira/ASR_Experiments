@@ -39,14 +39,7 @@ Ce script doit être lancé **avant `pre-process.py`**. Il permet de réduire le
 - Supprimant les parties silencieuses ou non parlées
 - Conservant uniquement les régions où la parole est présente
 - Exportant les timestamps des segments de parole détectés au format **RTTM**
-
-### 🚀 Utilisation
-
-```bash
-python vad_pyannote.py \
-  --input_dir /chemin/vers/audio_brut \
-  --output_dir /chemin/vers/sortie_vad
-
+- 
 
 # Pipeline de Fine-Tuning de Whisper pour le Kriol
 
