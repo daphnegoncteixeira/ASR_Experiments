@@ -2,7 +2,7 @@
 Cette branche contient plusieurs expériences liées à la **reconnaissance automatique de la parole (ASR)**.
 
 ---
-# 🔄 Pipeline de Prétraitement et d'Entraînement Auto-Supervisé avec Wav2Vec2
+# Pipeline de Prétraitement et d'Entraînement Auto-Supervisé avec Wav2Vec2
 
 ## `vad_pyannote.py` — Détection d'Activité Vocale (VAD) avec PyAnnote
 
@@ -131,6 +131,8 @@ Lancer une transcription sur un fichier `.wav` :
 ```bash
 python whisper_infer.py
 ```
+
+# Pipeline de Fine-Tuning avec Gervasio
 
 Les résultats sont sauvegardés dans un fichier JSON
 
